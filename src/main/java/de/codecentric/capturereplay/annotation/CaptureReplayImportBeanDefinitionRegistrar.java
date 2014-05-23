@@ -27,19 +27,21 @@ import org.springframework.util.MultiValueMap;
 
 public class CaptureReplayImportBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
 
-	public CaptureReplayImportBeanDefinitionRegistrar() {
-		System.out.println("here");
-	}
+	private static final String DEFAULT_CAPTURE_REPLAY_ADVICE_BEAN_ID = "captureReplayAdvice";
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		MultiValueMap<String, Object> attributes = importingClassMetadata.getAllAnnotationAttributes(EnableCaptureReplay.class.getName());
 
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(CaptureReplayAdvice.class);
-		builder.addPropertyValue("mode", Mode.valueOf(attributes.getFirst("mode").toString()));
-		builder.addPropertyReference("dataMapper", attributes.getFirst("dataMapper").toString());
-		registry.registerBeanDefinition("captureReplayAdvice", builder.getBeanDefinition());
+		Mode mode = Mode.valueOf(attributes.getFirst("mode").toString());
 
-		AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
+		if (!Mode.OFF.equals(mode)) {
+			BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(CaptureReplayAdvice.class);
+			builder.addPropertyValue("mode", mode);
+			builder.addPropertyReference("dataMapper", attributes.getFirst("dataMapper").toString());
+			registry.registerBeanDefinition(DEFAULT_CAPTURE_REPLAY_ADVICE_BEAN_ID, builder.getBeanDefinition());
+
+			AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry);
+		}
 	}
 }

@@ -40,12 +40,15 @@ public class CaptureReplayAdvice implements InitializingBean {
 			return returnValue;
 		} else if (Mode.REPLAY.equals(mode)) {
 			return dataMapper.getCapturedData(signature.getMethod().getName(), pjp.getArgs());
-		} else {
+		} else if (Mode.DISABLED.equals(mode)) {
 			return pjp.proceed();
+		} else {
+			throw new IllegalCaptureReplayUsageException(String.format("Capturing/replaying is switched off. You should not use %s directly.", this.getClass().getSimpleName()));
 		}
 	}
 
 	public void setMode(Mode mode) {
+		preventIllegalModeChange(mode);
 		this.mode = mode;
 	}
 
@@ -53,9 +56,24 @@ public class CaptureReplayAdvice implements InitializingBean {
 		this.dataMapper = dataMapper;
 	}
 
+	private void preventIllegalModeChange(Mode mode) throws IllegalCaptureReplayUsageException {
+		// The current mode cannot be changed if the it is set to OFF.
+		if (Mode.OFF.equals(this.mode) && !Mode.OFF.equals(mode)) {
+			throw new IllegalCaptureReplayUsageException("Capturing/replaying is switched off. It is not allowed to enabled it at runtime.");
+		} else if (!Mode.OFF.equals(this.mode) && Mode.OFF.equals(mode)) {
+			throw new IllegalCaptureReplayUsageException("Capturing/replaying is switched on. It is not allowed to switch it off at runtime.");
+		}
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Validate.notNull(mode, "<capture-replay /> is used but no mode (off/capture/replay) has been set.");
 		Validate.notNull(dataMapper, "<capture-replay /> is used but no data mapper has been set.");
+	}
+
+	public class IllegalCaptureReplayUsageException extends RuntimeException {
+		public IllegalCaptureReplayUsageException(String message) {
+			super(message);
+		}
 	}
 }

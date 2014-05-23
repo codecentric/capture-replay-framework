@@ -23,11 +23,11 @@
 	   http://www.codecentric.de/spring/capture-replay/capture-replay.xsd http://www.codecentric.de/spring/capture-replay/capture-replay.xsd">
 
 	<bean id="captureFileProvider" class="de.codecentric.capturereplay.data.DefaultCaptureFileProvider">
-		<property name="captureFilesPath" value="/tmp" />
-		<property name="captureFileExtension" value=".cap.json" />
+		<property name="captureFilesPath" value="/tmp"/>
+		<property name="captureFileExtension" value=".cap.json"/>
 	</bean>
 
-	<bean id="dataMapper" class="de.codecentric.capturereplay.data.JsonDataMapper" >
+	<bean id="dataMapper" class="de.codecentric.capturereplay.data.JsonDataMapper">
 		<constructor-arg ref="captureFileProvider"/>
 	</bean>
 

@@ -19,26 +19,31 @@ package de.codecentric.capturereplay.ns;
 import de.codecentric.capturereplay.CaptureReplayAdvice;
 import de.codecentric.capturereplay.Mode;
 import org.springframework.aop.config.AopConfigUtils;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
+import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class CaptureReplayBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
+public class CaptureReplayBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
 	@Override
-	protected Class<?> getBeanClass(Element element) {
-		return CaptureReplayAdvice.class;
-	}
+	protected AbstractBeanDefinition parseInternal(Element element, ParserContext parserContext) {
+		Mode mode = Mode.valueOf(element.getAttribute("mode").toUpperCase());
 
-	protected void doParse(Element element, ParserContext parserContext, BeanDefinitionBuilder builder) {
-		String mode = element.getAttribute("mode");
-		builder.addPropertyValue("mode", Mode.valueOf(mode.toUpperCase()));
+		if (Mode.OFF.equals(mode)) {
+			return null;
+		}
 
 		String dataMapperRef = element.getAttribute("data-mapper-ref");
+
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(CaptureReplayAdvice.class);
+		builder.addPropertyValue("mode", mode);
 		builder.addPropertyReference("dataMapper", dataMapperRef);
 
 		AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext.getRegistry());
+
+		return builder.getBeanDefinition();
 	}
 
 	@Override

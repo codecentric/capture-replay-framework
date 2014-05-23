@@ -19,5 +19,6 @@ package de.codecentric.capturereplay;
 public enum Mode {
 	CAPTURE,
 	REPLAY,
+	DISABLED,
 	OFF
 }

@@ -16,11 +16,7 @@
 
 package de.codecentric.capturereplay;
 
-import de.codecentric.capturereplay.data.TemporaryCaptureFileProvider;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,7 +48,7 @@ public class CapturableTest {
 		assertEquals("captured text", capturableBean.getString());
 
 		// Disable capturing completely. "other text" has been set previously and should be returned.
-		captureReplayAdvice.setMode(Mode.OFF);
+		captureReplayAdvice.setMode(Mode.DISABLED);
 		assertEquals("other text", capturableBean.getString());
 
 		// Enable capturing assert that it still works, even if getString() is called multiple times.
@@ -60,6 +56,11 @@ public class CapturableTest {
 		capturableBean.setString("captured text");
 		assertEquals("captured text", capturableBean.getString());
 		assertEquals("captured text", capturableBean.getString());
+	}
+
+	@Test(expected = CaptureReplayAdvice.IllegalCaptureReplayUsageException.class)
+	public void testSwitchOffCaptureReplayAdvice() {
+		captureReplayAdvice.setMode(Mode.OFF);
 	}
 
 }

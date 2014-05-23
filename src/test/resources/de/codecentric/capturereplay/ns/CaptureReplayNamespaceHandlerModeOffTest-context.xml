@@ -28,9 +28,7 @@
 		</constructor-arg>
 	</bean>
 
-	<cc:capture-replay id="captureReplayAdvice" mode="capture" data-mapper-ref="dataMapper"/>
+	<cc:capture-replay id="captureReplayAdvice" mode="off" data-mapper-ref="dataMapper"/>
 
-	<context:component-scan base-package="de.codecentric">
-		<context:exclude-filter type="regex" expression="de.codecentric.capturereplay.annotation"/>
-	</context:component-scan>
+	<context:component-scan base-package="de.codecentric.capturereplay.ns"/>
 </beans>

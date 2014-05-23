@@ -31,6 +31,7 @@
 						<simpleType>
 							<restriction base="string">
 								<enumeration value="off"/>
+								<enumeration value="disabled"/>
 								<enumeration value="capture"/>
 								<enumeration value="replay"/>
 							</restriction>
