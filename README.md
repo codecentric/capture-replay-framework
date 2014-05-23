@@ -97,6 +97,12 @@ public YourAwesomeEntity doMagic() {
 }
 ```
 
+## Release Notes
+
+### Version 1.1.0
+
+This version introduces the new mode `Mode.DISABLED` which in fact is what `Mode.OFF` was in version 1.0.0. `Mode.OFF` changes its semantics. While `Mode.DISABLED` allows you to enable the capturing/replaying mechanism at runtime, `Mode.OFF` does not. Methods that are annotated with `@Capturable` will not be replaced with proxies if you use `Mode.OFF`. This new feature is meant for production systems where performance matters and you don't want to toggle capturing/replaying mechanism.
+
 ## Contributing
 
 [Pull requests][] are welcome.
